@@ -1,6 +1,6 @@
 # RedditRabbit
 
-Run in a console with the first argument being the starting comment node. Requires Python 3.5.2.
+Run in a console with the first argument being the starting comment node. Requires Python 3.5.
 
 For example:
 
