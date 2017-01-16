@@ -5,11 +5,11 @@ import time
 import sys
 
 try:
-	url = sys.argv[1]
-	try:
-		url = contents[:[l.start() for l in re.finditer("/", contents)][8]] + ".json"
-	except IndexError:
-		url = contents[:contents.find("?context")] + ".json"
+    url = sys.argv[1]
+    try:
+        url = contents[:[l.start() for l in re.finditer("/", contents)][8]] + ".json"
+    except IndexError:
+        url = contents[:contents.find("?context")] + ".json"
 except:
     # random comment that starts the rabbit hole that I found
     url = "https://www.reddit.com/r/gaming/comments/5o72wo/oh_shi_oh_my_goooood/dchl7nn.json"
