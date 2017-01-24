@@ -33,6 +33,7 @@ def findLink():
         jres = json.loads(data.decode(res.info().get_content_charset("utf-8")))
         body = jres[1]["data"]["children"][0]["data"]["body"]
         commentId = jres[1]["data"]["children"][0]["data"]["id"]
+        
         if (body == "[removed]"):
             try:
                 res = req.urlopen(req.Request(ceddit + commentId, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"}))
@@ -53,7 +54,10 @@ def findLink():
     try:
         link = contents[:[l.start() for l in re.finditer("/", contents)][8]] + ".json"
     except IndexError:
-        link = contents[:contents.find("?context")] + ".json"
+        if (contents.find("?context") > 0):
+            link = contents[:contents.find("?context")] + ".json"
+        else:
+            link = contents + ".json"
 
     count += 1
     url = link
