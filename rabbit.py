@@ -47,18 +47,10 @@ def findLink():
         else:
             timestamp = time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(jres[1]["data"]["children"][0]["data"]["created"]))
 
-        contents = body[body.find("(") + 1:body.find(")")]
+        link = "https://www." + body[body.find("reddit.com/r/"):[l.start() for l in re.finditer("/", body)][7] + 8] + ".json"
     except:
         return exitLoop()
     
-    try:
-        link = contents[:[l.start() for l in re.finditer("/", contents)][8]] + ".json"
-    except IndexError:
-        if (contents.find("?context") > 0):
-            link = contents[:contents.find("?context")] + ".json"
-        else:
-            link = contents + ".json"
-
     count += 1
     url = link
     returnString = (str(count) + ". " + timestamp + " --- " + link)[:-5]
