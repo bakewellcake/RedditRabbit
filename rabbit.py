@@ -57,7 +57,7 @@ def findLink():
     count += 1
     url = link
 
-    return str(count) + ". " + timestamp + " --- " + link
+    return (str(count) + ". " + timestamp + " --- " + link)[:-5]
 
 while(run):
     print(findLink())
