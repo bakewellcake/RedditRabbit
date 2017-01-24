@@ -5,17 +5,14 @@ import time
 import sys
 
 try:
-    url = sys.argv[1]
-    try:
-        url = contents[:[l.start() for l in re.finditer("/", contents)][8]] + ".json"
-    except IndexError:
-        url = contents[:contents.find("?context")] + ".json"
+    url = sys.argv[1] + ".json"
 except:
-    # random comment that starts the rabbit hole that I found
-    url = "https://www.reddit.com/r/gaming/comments/5o72wo/oh_shi_oh_my_goooood/dchl7nn.json"
+    print("No URL given...")
+    
 count = 0
 run = True
 ceddit = 'https://api.pushshift.io/reddit/search?ids='
+deleted = False
 
 def exitLoop():
     global run
@@ -27,6 +24,8 @@ def exitLoop():
 def findLink():
     global url
     global count
+    global deleted
+    deleted = False
 
     try:
         res = req.urlopen(req.Request(url, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"}))
@@ -34,17 +33,19 @@ def findLink():
         jres = json.loads(data.decode(res.info().get_content_charset("utf-8")))
         body = jres[1]["data"]["children"][0]["data"]["body"]
         commentId = jres[1]["data"]["children"][0]["data"]["id"]
-        
         if (body == "[removed]"):
             try:
                 res = req.urlopen(req.Request(ceddit + commentId, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"}))
                 data = res.read()
                 jres = json.loads(data.decode(res.info().get_content_charset("utf-8")))
                 body = jres["data"][0]["body"]
+                timestamp = time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(jres["data"][0]["created_utc"]))
+                deleted = True
             except:
                 return exitLoop()
-        
-        timestamp = time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(jres[1]["data"]["children"][0]["data"]["created"]))
+        else:
+            timestamp = time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(jres[1]["data"]["children"][0]["data"]["created"]))
+
         contents = body[body.find("(") + 1:body.find(")")]
     except:
         return exitLoop()
@@ -56,8 +57,12 @@ def findLink():
 
     count += 1
     url = link
+    returnString = (str(count) + ". " + timestamp + " --- " + link)[:-5]
 
-    return (str(count) + ". " + timestamp + " --- " + link)[:-5]
+    if (deleted):
+        return returnString + " [node deleted]"
+    else:
+        return returnString
 
 while(run):
     print(findLink())
