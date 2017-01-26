@@ -47,7 +47,7 @@ def findLink():
         else:
             timestamp = time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(jres[1]["data"]["children"][0]["data"]["created"]))
 
-        link = "https://www." + body[body.find("reddit.com/r/"):[l.start() for l in re.finditer("/", body)][7] + 8] + ".json"
+        link = "https://www." + body[body.find("reddit.com/r/"):[l.start() for l in re.finditer("/", body[body.find("reddit.com/r/"):])][5] + body.find("reddit.com/r/") + 8] + ".json"
     except:
         return exitLoop()
     
