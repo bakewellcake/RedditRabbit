@@ -33,7 +33,8 @@ def findLink():
         jres = json.loads(data.decode(res.info().get_content_charset("utf-8")))
         body = jres[1]["data"]["children"][0]["data"]["body"]
         commentId = jres[1]["data"]["children"][0]["data"]["id"]
-        
+
+        # if comment is removed, look it up on ceddit.com
         if (body == "[removed]"):
             try:
                 res = req.urlopen(req.Request(ceddit + commentId, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"}))
@@ -49,11 +50,16 @@ def findLink():
 
         link = "https://www." + body[body.find("reddit.com/r/"):[l.start() for l in re.finditer("/", body[body.find("reddit.com/r/"):])][5] + body.find("reddit.com/r/") + 8] + ".json"
     except:
-        return exitLoop()
+        # if someone misplaced the 'roo, eg they linked the child of the 'roo
+        try:
+            parentId = jres[1]["data"]["children"][0]["data"]["parent_id"][3:]
+            link = "https://www.reddit.com" + jres[0]["data"]["children"][0]["data"]["permalink"] + parentId + ".json"
+        except:
+            return exitLoop()
     
     count += 1
     url = link
-    returnString = (str(count) + ". " + timestamp + " --- " + link)[:-5]
+    returnString = (str(count) + ". " + timestamp + " --- " + link).split(".json")[0]
 
     if (deleted):
         return returnString + " [node deleted]"
